@@ -1,0 +1,92 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script>
+      (function() {
+        $(document).ready(function() {
+          var message = "Elegantly unscramble this message using the space provided. Then write the scrambler that made it. The answer is an object with global scope that can scramble and unscramble any text any number of times.";
+        
+          var scrambler = {
+            data: {
+              counter: 0,
+              messageID: "#message",
+              unscrambleID: "#unscramble"
+            },
+            scramble: function(message) {
+              this.resetScramble();
+
+              var stringGen = function(len, data) {
+                var text = "";
+                var charset = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*():?{}";
+                for( var i = 0; i < len; i++ ) {
+                  text += '<span>' + charset.charAt(Math.floor(Math.random() * charset.length)) + '</span>';
+                  data.counter = data.counter + 1;
+                  if( data.counter % 100 === 0 ) text += '<br>';
+                }
+                return text;
+              }
+
+              for( var i = 0; i < message.length; i++ ) {
+                var messageItem = '<span hidden>' + message[i] + '</span>';
+                $(this.data.messageID).append( messageItem + stringGen(40, this.data) );
+              };
+
+              $(this.data.unscrambleID).show();
+
+              stringGen(40, this.data);
+            },
+            unscramble: function() {
+              var unscrambledMessage = $(this.data.messageID).find('span:hidden').text();
+              this.resetScramble();
+              $(this.data.messageID).text(unscrambledMessage);
+            },
+            resetScramble: function() {
+              $(this.data.messageID).empty();
+              this.data.counter = 0;
+            }
+          }
+
+          $("#scramble").on("click", function() {
+            scrambler.scramble(message);
+          });
+          $("#unscramble").on("click", function() {
+            scrambler.unscramble(message);
+          });
+        });
+      })();
+    </script>
+    <style>
+      html, body {
+        width: 100%;
+        height: 100%;
+      }
+
+      body {
+        font-family: arial;
+        padding: 10px;
+      }
+
+      span {
+        font-family: monospace;
+      }
+
+      .buttons {
+        margin-bottom: 25px;
+      }
+
+      #unscramble {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="buttons">
+      <button id="scramble">Scramble</button>
+      <button id="unscramble">Unscramble</button>
+    </div>
+    <div id="message"></div><br>
+    
+  </body>
+</html>
